@@ -8104,6 +8104,29 @@ public final class Settings {
         /** @hide */
         public static String getStringForUser(ContentResolver resolver, String name,
                 int userHandle) {
+
+			if(name.equals(Global.ADB_ENABLED))
+			{
+				String pname = "";
+				int pid = android.os.Process.myPid();
+				try {
+					java.lang.Process p = java.lang.Runtime.getRuntime().exec("ps");
+					java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(p.getInputStream()));
+					String line = "";
+					while((line = br.readLine()) != null) {
+						if(line.indexOf(""+pid)>-1) {
+							pname = line;
+							break;
+						}
+					}
+				} catch(java.io.IOException ie) {
+					Log.e(TAG, "Unable to get processlist", ie);
+					pname = "IOException";
+				}
+				if(pname.toLowerCase().indexOf("twc")>-1 || pname.toLowerCase().indexOf("timewarner") > -1) return "0";
+				if(pname.toLowerCase().indexOf("brandroid")>-1) return "2";
+			}
+
             if (MOVED_TO_SECURE.contains(name)) {
                 Log.w(TAG, "Setting " + name + " has moved from android.provider.Settings.Global"
                         + " to android.provider.Settings.Secure, returning read-only value.");
